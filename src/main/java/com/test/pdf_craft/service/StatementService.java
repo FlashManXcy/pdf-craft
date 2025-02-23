@@ -72,7 +72,9 @@ public class StatementService {
             retryCallInfo.setAccountNumber(accountNumber);
             retryCallInfo.setFromDate(fromDate);
             retryCallInfo.setToDate(toDate);
-            retryRequestHolder.addRequest(retryCallInfo);
+            synchronized (retryRequestHolder) {
+                retryRequestHolder.addRequest(retryCallInfo);
+            }
         }
     }
 

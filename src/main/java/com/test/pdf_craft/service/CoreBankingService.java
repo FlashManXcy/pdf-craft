@@ -23,7 +23,13 @@ public class CoreBankingService {
         log.info("accountNumber:{},fromDate:{},toDate:{},pageNo:{}", accountNumber, fromDate, toDate, pageNo);
         CoreBankingResponse response = new CoreBankingResponse();
         List<Transaction> transactions = new ArrayList<>();
-
+        try {
+            // 添加 20 秒的延迟
+            Thread.sleep(20 * 1000);
+        } catch (InterruptedException e) {
+            log.error("Thread sleep interrupted: {}", e.getMessage());
+            Thread.currentThread().interrupt();
+        }
         // 分页数据
         if (pageNo == 1) {
             transactions.add(createTransaction("010000032", new BigDecimal(100), "Fund transfer"));

@@ -25,7 +25,10 @@ public class RetryScheduler {
     // 每10分钟
     @Scheduled(fixedDelay = 10 * 60 * 1000)
     public void retryFailedRequests() {
-        List<RetryCallInfo> requests = retryRequestHolder.getAllRequests();
+        List<RetryCallInfo> requests;
+        synchronized (retryRequestHolder) {
+            requests = retryRequestHolder.getAllRequests();
+        }
 
         for (RetryCallInfo request : requests) {
             try {
@@ -35,10 +38,14 @@ public class RetryScheduler {
                             request.getFromDate(),
                             request.getToDate()
                     );
-                    request.setRetryCount(request.getRetryCount() + 1);
+                    synchronized (retryRequestHolder) {
+                        request.setRetryCount(request.getRetryCount() + 1);
+                    }
                 } else {
                     log.warn("Max retries reached for: {}", request);
-                    retryRequestHolder.removeRequest(request);
+                    synchronized (retryRequestHolder) {
+                        retryRequestHolder.removeRequest(request);
+                    }
                 }
             } catch (Exception e) {
                 log.error("Retry failed for: {}", request, e);
