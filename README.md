@@ -1,33 +1,53 @@
 
 1. 项目结构
-```java
-src/main/java/com/test/pdf_craft/
-├── common/Result.java
-├── config/
-|   ├── RetryRequestHolder.java
-│   ├── AsyncConfig.java
-├── controller/StatementController.java
-├── enums/ResultCodeEnum.java
-├── job/RetryScheduler.java
-├── model/info
-│   ├── PageInfo.java
-│   ├── RetryCallInfo.java
-│   ├── Transaction.java
-├── model/request
-│   ├── RetryCallRequest.java
-│   ├── TemplateEngineRequest.java
-├── model/response
-│   ├── CoreBankingResponse.java
-│   ├── TemplateEngineResponse.java
-├── service/
-│   ├── CoreBankingService.java
-│   ├── StatementService.java
-│   └── TemplateEngineService.java
-├── utils/
-│   ├── DateUtils.java
-│   ├── JSONUtils.java
-└── Application.java
-
+pdf-craft/
+├── README.md
+├── .gitignore
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+├── .gitattributes
+├── .git/
+├── .mvn/
+├── target/
+├── .idea/
+├── src/
+│   └── main/
+│       └── java/
+│           └── com/
+│               └── test/
+│                   └── pdf_craft/
+│                       ├── common/
+│                       │   └── Result.java
+│                       ├── config/
+│                       │   ├── AsyncConfig.java
+│                       │   └── RetryRequestHolder.java
+│                       ├── controller/
+│                       │   └── StatementController.java
+│                       ├── enums/
+│                       │   └── ResultCodeEnum.java
+│                       ├── job/
+│                       │   └── RetrySchedulerJob.java
+│                       ├── model/
+│                       │   ├── info/
+│                       │   │   ├── PageInfo.java
+│                       │   │   ├── RetryCallInfo.java
+│                       │   │   └── Transaction.java
+│                       │   ├── request/
+│                       │   │   ├── RetryCallRequest.java
+│                       │   │   └── TemplateEngineRequest.java
+│                       │   └── response/
+│                       │       ├── CoreBankingResponse.java
+│                       │       └── TemplateEngineResponse.java
+│                       ├── service/
+│                       │   ├── CoreBankingService.java
+│                       │   ├── StatementService.java
+│                       │   └── TemplateEngineService.java
+│                       ├── utils/
+│                       │   ├── DateUtils.java
+│                       │   └── JSONUtils.java
+│                       └── PdfCraftApplication.java
+```
 以下是对该项目补充相应内容后的详细说明：
 
 ```
@@ -92,7 +112,8 @@ mvn test
 
 ### 6.2 测试用例说明
 - `StatementServiceTest`：测试 `StatementService` 类中的方法。
-- `RetrySchedulerTest`：测试 `RetryScheduler` 类中的方法。
+- `RetrySchedulerJobTest`：测试 `RetrySchedulerJob` 类中的方法。
+- ...
 ```
 
 ### 3. 测试执行说明
