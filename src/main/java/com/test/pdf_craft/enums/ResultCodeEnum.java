@@ -4,7 +4,8 @@ public enum ResultCodeEnum {
     SUCCESS("00000", "success"),
     FAIL("99999", "fail"),
     DATE_FORMAT_INCORRECT("00001", "The date format is incorrect"),
-    TIME_IS_INCORRECT("00002", "The start date cannot be longer than the end date");
+    TIME_IS_INCORRECT("00002", "The start date cannot be longer than the end date"),
+    PDF_GENERATION_FAILED("00003", "PDF generation failed");
 
     private final String code;
     private final String message;

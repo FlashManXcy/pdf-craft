@@ -5,24 +5,24 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class DateUtilsTest {
+public class DateUtilsTest {
+
     @Test
-    void testSplitDateRange() {
-        List<DateUtils.DateRange> ranges = DateUtils.splitDateRange("04-03-2021", "11-08-2021");
-        
-        assertThat(ranges).hasSize(6);
-        assertThat(ranges.get(0).getStartDate()).isEqualTo("04-03-2021");
-        assertThat(ranges.get(0).getEndDate()).isEqualTo("31-03-2021");
-        assertThat(ranges.get(5).getEndDate()).isEqualTo("11-08-2021");
+    public void testSplitDateRange() {
+        List<DateUtils.DateRange> ranges = DateUtils.splitDateRange("2021-04-03", "2021-11-08");
+        assertEquals(8, ranges.size());
+        assertEquals("03-04-2021", ranges.get(0).getStartDate());
+        assertEquals("30-04-2021", ranges.get(0).getEndDate());
+        assertEquals("30-09-2021", ranges.get(5).getEndDate());
     }
 
     @Test
-    void testFebruaryLeapYear() {
-        List<DateUtils.DateRange> ranges = DateUtils.splitDateRange("28-02-2020", "01-03-2020");
-        assertThat(ranges).hasSize(2);
-        assertThat(ranges.get(0).getEndDate()).isEqualTo("29-02-2020"); // 闰年
-        assertThat(ranges.get(1).getEndDate()).isEqualTo("01-03-2020");
+    public void testFebruaryLeapYear() {
+        List<DateUtils.DateRange> ranges = DateUtils.splitDateRange("2020-02-28", "2020-03-01");
+        assertEquals(2, ranges.size());
+        assertEquals("29-02-2020", ranges.get(0).getEndDate());
+        assertEquals("01-03-2020", ranges.get(1).getEndDate());
     }
 }

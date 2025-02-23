@@ -10,6 +10,7 @@ import com.test.pdf_craft.utils.DateUtils;
 import com.test.pdf_craft.utils.JSONUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -21,11 +22,11 @@ import java.util.List;
 @Service
 @Slf4j
 public class StatementService {
-    @Resource
+    @Autowired
     private CoreBankingService coreBankingService;
-    @Resource
+    @Autowired
     private TemplateEngineService templateEngineService;
-    @Resource
+    @Autowired
     private RetryRequestHolder retryRequestHolder;
 
 
@@ -91,4 +92,5 @@ public class StatementService {
             throw new RuntimeException("PDF generation failed");
         }
     }
+
 }
