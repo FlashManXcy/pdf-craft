@@ -1,37 +1,27 @@
 package com.test.pdf_craft;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.test.pdf_craft.common.Result;
 import com.test.pdf_craft.controller.StatementController;
-import com.test.pdf_craft.model.info.Transaction;
+import com.test.pdf_craft.enums.ResultCodeEnum;
 import com.test.pdf_craft.model.request.TemplateEngineRequest;
 import com.test.pdf_craft.model.response.TemplateEngineResponse;
 import com.test.pdf_craft.service.StatementService;
 import com.test.pdf_craft.service.TemplateEngineService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 public class StatementControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Mock
     private StatementService statementService;
@@ -39,45 +29,76 @@ public class StatementControllerTest {
     @Mock
     private TemplateEngineService templateEngineService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @InjectMocks
+    private StatementController statementController;
 
-    private TemplateEngineRequest templateEngineRequest;
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @BeforeEach
     public void setUp() {
-        templateEngineRequest = new TemplateEngineRequest();
-        // 可以根据需要初始化 templateEngineRequest 的属性
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testProcessStatementAsync() throws Exception {
+    public void testGenerateStatement_ValidDates() {
         String accountNumber = "acc123";
         String fromDate = "2024-01-01";
-        String toDate = "2024-06-30";
+        String toDate = "2024-12-31";
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/statements")
-                        .param("accountNumber", accountNumber)
-                        .param("fromDate", fromDate)
-                        .param("toDate", toDate))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk());
-        //TimeUnit.SECONDS.sleep(120);
-        verify(statementService, times(0)).processStatementAsync(accountNumber, fromDate, toDate);
+        Result result = statementController.generateStatement(accountNumber, fromDate, toDate);
+
+        verify(statementService, times(1)).processStatementAsync(accountNumber, fromDate, toDate);
+        assertEquals(ResultCodeEnum.SUCCESS.getCode(), result.getCode());
     }
 
     @Test
-    public void testGeneratePdf() throws Exception {
+    public void testGenerateStatement_InvalidDateFormat() {
+        String accountNumber = "acc123";
+        String fromDate = "01/01/2024";
+        String toDate = "31/12/2024";
+
+        Result result = statementController.generateStatement(accountNumber, fromDate, toDate);
+
+        verify(statementService, never()).processStatementAsync(accountNumber, fromDate, toDate);
+        assertEquals(ResultCodeEnum.DATE_FORMAT_INCORRECT.getCode(), result.getCode());
+    }
+
+    @Test
+    public void testGenerateStatement_StartDateAfterEndDate() {
+        String accountNumber = "acc123";
+        String fromDate = "2024-12-31";
+        String toDate = "2024-01-01";
+
+        Result result = statementController.generateStatement(accountNumber, fromDate, toDate);
+
+        verify(statementService, never()).processStatementAsync(accountNumber, fromDate, toDate);
+        assertEquals(ResultCodeEnum.TIME_IS_INCORRECT.getCode(), result.getCode());
+    }
+
+    @Test
+    public void testGeneratePdf_Success() {
+        TemplateEngineRequest request = new TemplateEngineRequest();
         TemplateEngineResponse response = new TemplateEngineResponse();
         response.setData("base64pdf");
-        when(templateEngineService.generatePdf(any(TemplateEngineRequest.class))).thenReturn(response);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/generatePdf")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(templateEngineRequest)))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        when(templateEngineService.generatePdf(request)).thenReturn(response);
 
-        verify(templateEngineService, times(0)).generatePdf(templateEngineRequest);
+        Result result = statementController.generatePdf(request);
+
+        verify(templateEngineService, times(1)).generatePdf(request);
+        assertEquals(ResultCodeEnum.SUCCESS.getCode(), result.getCode());
+        assertEquals(response.getData(), result.getData());
+    }
+
+    @Test
+    public void testGeneratePdf_Failure() {
+        TemplateEngineRequest request = new TemplateEngineRequest();
+
+        when(templateEngineService.generatePdf(request)).thenThrow(new RuntimeException("PDF generation failed"));
+
+        Result result = statementController.generatePdf(request);
+
+        verify(templateEngineService, times(1)).generatePdf(request);
+        assertEquals(ResultCodeEnum.PDF_GENERATION_FAILED.getCode(), result.getCode());
     }
 }

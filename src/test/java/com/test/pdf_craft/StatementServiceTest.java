@@ -1,7 +1,7 @@
 package com.test.pdf_craft;
 
 import com.test.pdf_craft.config.RetryRequestHolder;
-import com.test.pdf_craft.job.RetryScheduler;
+import com.test.pdf_craft.job.RetrySchedulerJob;
 import com.test.pdf_craft.model.info.PageInfo;
 import com.test.pdf_craft.model.info.RetryCallInfo;
 import com.test.pdf_craft.model.info.Transaction;
@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
@@ -35,7 +36,8 @@ class StatementServiceTest {
     @Mock
     private RetryRequestHolder retryRequestHolder;
     @Mock
-    private RetryScheduler retryScheduler;
+    private RetrySchedulerJob retrySchedulerJob;
+
 
     @Test
     void testProcessStatementAsync() throws InterruptedException {
@@ -63,17 +65,17 @@ class StatementServiceTest {
         return response;
     }
 
+
     @Test
     void shouldAddToRetryQueueWhenExceptionOccurs() {
-        // 模拟核心银行系统抛出异常
-        when(coreBankingService.getTransactions(any(), any(), any(), anyInt()))
+        lenient().when(coreBankingService.getTransactions(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt()))
                 .thenThrow(new RuntimeException("Service unavailable"));
 
         statementService.processStatementAsync("acc123", "01-01-2024", "31-12-2024");
 
         // 验证是否加入重试队列
         ArgumentCaptor<RetryCallInfo> captor = ArgumentCaptor.forClass(RetryCallInfo.class);
-        verify(retryRequestHolder).addRequest(captor.capture());
+        Mockito.verify(retryRequestHolder).addRequest(captor.capture());
 
         RetryCallInfo captured = captor.getValue();
         assertEquals("acc123", captured.getAccountNumber());

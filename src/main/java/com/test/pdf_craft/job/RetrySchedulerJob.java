@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 @EnableScheduling
 @Slf4j
-public class RetryScheduler {
+public class RetrySchedulerJob {
     @Resource
     private StatementService statementService;
     @Resource
