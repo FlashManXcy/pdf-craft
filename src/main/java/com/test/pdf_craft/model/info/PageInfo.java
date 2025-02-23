@@ -2,6 +2,9 @@ package com.test.pdf_craft.model.info;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import java.io.Serializable;
+
 /**
  * @Author: xiongchaoyu
  * @CreateTime: 2025-02-21  10:31
@@ -10,7 +13,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class PageInfo {
+public class PageInfo implements Serializable {
     private boolean lastPage;
     private Integer currentPage;
 }

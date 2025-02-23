@@ -2,6 +2,7 @@ package com.test.pdf_craft.model.info;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -11,7 +12,7 @@ import java.math.BigDecimal;
  * @Version: 1.0
  */
 @Data
-public class Transaction {
+public class Transaction implements Serializable {
     private String trxReferenceNo;
     private String valueDate;
     private String description;

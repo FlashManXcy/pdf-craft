@@ -6,6 +6,7 @@ package com.test.pdf_craft.model.request;/**
 import com.test.pdf_craft.model.info.RetryCallInfo;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -15,6 +16,6 @@ import java.util.List;
  * @Version: 1.0
  */
 @Data
-public class RetryCallRequest {
+public class RetryCallRequest implements Serializable {
     private List<RetryCallInfo> list;
 }

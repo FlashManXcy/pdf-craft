@@ -4,6 +4,7 @@ import com.test.pdf_craft.model.info.PageInfo;
 import com.test.pdf_craft.model.info.Transaction;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @Data
-public class CoreBankingResponse {
+public class CoreBankingResponse implements Serializable {
     private List<Transaction> transactions;
     private PageInfo page;
 }

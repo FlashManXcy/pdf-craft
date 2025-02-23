@@ -3,6 +3,7 @@ package com.test.pdf_craft.model.request;
 import com.test.pdf_craft.model.info.Transaction;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 /**
  * @Author: xiongchaoyu
@@ -11,7 +12,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @Data
-public class TemplateEngineRequest {
+public class TemplateEngineRequest implements Serializable {
     private String templateId;
     private List<Transaction> data;
 }
