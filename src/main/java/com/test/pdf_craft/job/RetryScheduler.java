@@ -22,7 +22,7 @@ public class RetryScheduler {
 
     private static final int MAX_RETRY = 3;
 
-    // 每10分钟
+    //每10分钟
     @Scheduled(fixedDelay = 10 * 60 * 1000)
     public void retryFailedRequests() {
         List<RetryCallInfo> requests;
